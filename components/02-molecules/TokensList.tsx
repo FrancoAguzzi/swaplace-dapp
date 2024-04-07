@@ -126,6 +126,11 @@ export const TokensList = ({
     );
   const allSquares = [...tokenCards, addTokenSquare, ...placeholders];
 
+<<<<<<< HEAD
+=======
+  const addTokenSquare = withAddTokenCard ? AddTokenCardManually() : <></>;
+
+>>>>>>> origin/main
   const Layout = (squares: JSX.Element[]) => {
     return (
       <div className={gridClassNames}>

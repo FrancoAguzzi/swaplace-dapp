@@ -1,0 +1,40 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+          cache: "pnpm"
+      - run: pnpm install
+      - run: pnpm build
+      - run: pnpm test
+      - run: pnpm audit signatures
+      - name: Release
+        env:
+          NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID }}
+          NEXT_PUBLIC_ALCHEMY_ETHEREUM_HTTP: ${{ secrets.NEXT_PUBLIC_ALCHEMY_ETHEREUM_HTTP }}
+          NEXT_PUBLIC_ALCHEMY_ETHEREUM_KEY: ${{ secrets.NEXT_PUBLIC_ALCHEMY_ETHEREUM_KEY }}
+          NEXT_PUBLIC_ALCHEMY_SEPOLIA_HTTP: ${{ secrets.NEXT_PUBLIC_ALCHEMY_SEPOLIA_HTTP }}
+          NEXT_PUBLIC_ALCHEMY_SEPOLIA_KEY: ${{ secrets.NEXT_PUBLIC_ALCHEMY_SEPOLIA_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npx semantic-release
